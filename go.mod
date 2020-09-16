@@ -1,4 +1,4 @@
-module github.com/GameXG/zcstream
+module github.com/gamexg/zcstream
 
 go 1.14
 
