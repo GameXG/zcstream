@@ -2,11 +2,14 @@ package zcstream
 
 import (
 	"fmt"
-	"github.com/gamexg/go-mempool"
 	"io"
 	"sync"
 )
 
+// 零拷贝读
+// 内部包含一个缓冲区，数据读取到缓冲区。
+// 调用者使用数据时，直接提供对缓冲区的引用，节省一次拷贝。
+// 和 BufferRead 的区别是， ZeroCopyReadStream 每次读取会尝试读满缓冲区，而 BufferRead 只读取调用者要求的数据的长度。
 type ZeroCopyReadStream struct {
 	m              sync.Mutex
 	r              io.Reader
@@ -16,24 +19,6 @@ type ZeroCopyReadStream struct {
 	defaultBufSize int
 	maxSize        int
 	memPool        MemPool
-}
-
-type MemPool interface {
-	Malloc(size int) []byte
-	Free([]byte)
-}
-
-var defaultMemPool = new(memPool)
-
-type memPool struct {
-}
-
-func (p *memPool) Malloc(size int) []byte {
-	return mempool.Get(size)
-}
-
-func (p *memPool) Free(v []byte) {
-	_ = mempool.Put(v)
 }
 
 // 初始化零拷贝读
